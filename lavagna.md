@@ -10,33 +10,24 @@ Il server gestisce i dati condivisi e applica un **protocollo testuale** per la 
 ---
 
 ## ⚙️ Descrizione generale
-Il server mantiene una **lista di messaggi** (`ArrayList<Messaggio>`), ognuno con un ID univoco, autore e testo.
+Il server mantiene una **lista di messaggi**, ognuno con un ID univoco, autore e testo.
 
 I client si connettono tramite socket TCP e inviano comandi testuali.  
 Il server interpreta i comandi e risponde in base al protocollo.
 
-Gli studenti devono **sviluppare la parte server** come esercizio principale.  
-Come parte aggiuntiva facoltativa, è possibile implementare anche il **client**.
+Per ogni comando, sono mandate N linee, fino ad un terminatore (riga vuota), o fino a che il comando non termina naturalmente (come per `LIST`).
 
 ---
 
 ## 🧾 Protocollo di comunicazione
 
-### 1️⃣ Connessione
-All’apertura della connessione:
-```
-SERVER → WELCOME
-CLIENT → LOGIN nomeUtente
-SERVER → OK
-```
-
 ### 2️⃣ Comandi disponibili
 
 | Comando | Descrizione | Esempio |
 |----------|--------------|----------|
-| `ADD testo` | Aggiunge un messaggio alla lavagna | `ADD Oggi verifica di TPSIT` |
+| `ADD <user> "<testo 1>" "<test 2>" ...` | Aggiunge un messaggio alla lavagna | `ADD nicco "Oggi verifica di TPSIT" "Verifica alle 08:00"` |
 | `LIST` | Mostra tutti i messaggi con ID e autore | `LIST` |
-| `DEL id` | Cancella un messaggio se è dell’utente che l’ha scritto | `DEL 2` |
+| `DEL <user> <id 1> <id 2> ...` | Cancella un messaggio se è dell’utente che l’ha scritto | `DEL nicco 2 5` |
 | `QUIT` | Disconnette il client | `QUIT` |
 
 ### 3️⃣ Risposte del server
@@ -153,6 +144,9 @@ Ciò permette di provare rapidamente tutto il protocollo senza scrivere il clien
 ---
 
 ## 🚧 Gestione errori e casi limite
+Un errore può essere inviato in qualunque momento (anche non alla riga terminatore).
+Quando inviato, la connessione termina.
+
 - Comandi sconosciuti → `ERR UNKNOWNCMD`
 - Sintassi incompleta (es. `ADD` senza testo, `DEL` senza ID numerico) → `ERR SYNTAX`
 - Operazioni sulle risorse vuote (es. `LIST` su lavagna vuota) comunque restituiscono `BOARD:` seguito da `END`
